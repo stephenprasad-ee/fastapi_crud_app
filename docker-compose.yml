@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    image: myhealthapi:v1.0
+    container_name: myhealthapi-app
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    environment:
+      - LOG_LEVEL=info
+    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  tests:
+    build: .
+    image: myhealthapitest:v1.0
+    container_name: myhealthapi-pytest-tests
+    depends_on:
+      - app
+    command: ["pytest", "test_app.py", "--disable-warnings", "-v"]
