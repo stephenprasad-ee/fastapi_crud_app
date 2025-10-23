@@ -1,7 +1,5 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python package
+name: myHealthAPI package
 
 on:
   push:
@@ -11,37 +9,89 @@ on:
 
 jobs:
   build:
-
-    #runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest # <- Use this if you prefer to use github runner
     runs-on: self-hosted
-    strategy:
-      fail-fast: true
-      matrix:
-        #python-version: ["3.9", "3.10", "3.11", "3.12"]
-        python-version: ["3.12"]
+
+    env:
+      IMAGE_NAME: myhealthapi
+      IMAGE_TAG: latest
+      PYTHON_VERSION: 3.12
 
     steps:
+      # Checkout code from repo
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
+
+      # Setup Python 3.12 (currently installed on my local :D )
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v3
       with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    # Setup and build docker image from dockerfile
+    - name: Build myHealthAPI Docker image
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
+        echo "Building Docker image using Python $PYTHON_VERSION..."
+        docker build --build-arg PYTHON_VERSION=$PYTHON_VERSION -t $IMAGE_NAME:$IMAGE_TAG .
+
+   # Run flake8 linting
+    - name: Run flake8 linting
       run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Run Uvicorn
+        docker run --rm $IMAGE_NAME:$IMAGE_TAG flake8 .
+
+    # Run tests using docker compose
+    - name: Run tests with Docker Compose
       run: |
-        uvicorn app:app --host 0.0.0.0 --port 8000 &
-        sleep 10
-        curl http://localhost:8000/health
-    - name: Test with pytest
-      run: |
-        pytest test_app.py --disable-warnings -v
+        docker compose -f docker-compose.yml up --build --abort-on-container-exit --exit-code-from tests
+
+# Hopefully this should do the job. Trying things out again :(
+
+
+# THE BELOW CODE IS FOR RUNNING DIRECTLY WITHOUT DOCKER, USING GH-ACTIONS AND LOCAL RUNNER
+
+# # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+# name: Python package
+
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+# jobs:
+#   build:
+
+#     #runs-on: ubuntu-latest
+#     runs-on: self-hosted
+#     strategy:
+#       fail-fast: true
+#       matrix:
+#         #python-version: ["3.9", "3.10", "3.11", "3.12"]
+#         python-version: ["3.12"]
+
+#     steps:
+#     - uses: actions/checkout@v4
+#     - name: Set up Python ${{ matrix.python-version }}
+#       uses: actions/setup-python@v3
+#       with:
+#         python-version: ${{ matrix.python-version }}
+#     - name: Install dependencies
+#       run: |
+#         python -m pip install --upgrade pip
+#         python -m pip install flake8 pytest
+#         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+#     - name: Lint with flake8
+#       run: |
+#         # stop the build if there are Python syntax errors or undefined names
+#         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+#         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+#         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+#     - name: Run Uvicorn
+#       run: |
+#         uvicorn app:app --host 0.0.0.0 --port 8000 &
+#         sleep 10
+#         curl http://localhost:8000/health
+#     - name: Test with pytest
+#       run: |
+#         pytest test_app.py --disable-warnings -v
