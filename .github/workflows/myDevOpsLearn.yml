@@ -33,7 +33,13 @@ jobs:
         echo "Building Docker image using Python $PYTHON_VERSION..."
         docker build --build-arg PYTHON_VERSION=$PYTHON_VERSION -t $IMAGE_NAME:$IMAGE_TAG .
 
-   # Run flake8 linting
+    # Adding a wait before linting
+    - name: Wait for environment to stabilize
+      run: |
+        echo "Waiting 10 seconds before running lint checks..."
+        sleep 10
+
+    # Run flake8 linting
     - name: Run flake8 linting
       run: |
         docker run --rm $IMAGE_NAME:$IMAGE_TAG flake8 .
