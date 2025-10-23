@@ -13,13 +13,14 @@ from typing import List, Dict
 
 
 # ---------------------------------------------------------------------------------------
-# Use below code to format JSON responses by adding - 
+# Use below code to format JSON responses by adding -
 #   ', response_class=PrettyJSONResponse'
 # to the function call AFTER uncommenting below lines (19 to 25)
 # example: [Line 98] @app.get("/health", response_class=PrettyJSONResponse )
 # ---------------------------------------------------------------------------------------
 
 class PrettyJSONResponse(JSONResponse):
+
     def render(self, content: any) -> bytes:
         return json.dumps(
             content,
@@ -53,7 +54,7 @@ app = FastAPI(title="CRUD API with FastAPI", version="1.1")
 #         content = await response.body()
 #         parsed = json.loads(content)
 #         formatted_content = json.dumps(parsed, indent=4)
-#         return Response(content=formatted_content, 
+#         return Response(content=formatted_content,
 # media_type="application/json")
 #     return response
 # ---------------------------------------------------
@@ -68,12 +69,14 @@ current_id = 0
 # Pydantic Models
 # ---------------------
 class Item(BaseModel):
+
     name: str
     description: str = None
     price: float
     quantity: int
 
 class ItemResponse(Item):
+
     id: int
 
 # ---------------------
@@ -81,6 +84,7 @@ class ItemResponse(Item):
 # ---------------------
 @app.exception_handler(Exception)
 async def generic_exception_handler(request: Request, exc: Exception):
+    
     logger.error(f"Unhandled error: {exc}", exc_info=True)
     return JSONResponse(
         status_code=500,

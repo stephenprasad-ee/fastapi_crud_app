@@ -9,6 +9,7 @@ client = TestClient(app)
 # Health Check Test
 # -----------------------
 def test_health_check():
+
     response = client.get("/health")
     assert response.status_code == 200
     json_data = response.json()
@@ -19,6 +20,7 @@ def test_health_check():
 # CRUD Tests
 # -----------------------
 def test_create_item():
+
     response = client.post("/items/", json={
         "name": "Test Item",
         "description": "A test item",
@@ -31,6 +33,7 @@ def test_create_item():
     assert data["name"] == "Test Item"
 
 def test_list_items():
+
     # Ensure at least one item exists
     client.post("/items/", json={
         "name": "Item 2",
@@ -45,6 +48,7 @@ def test_list_items():
     assert len(data) >= 1
 
 def test_get_item():
+
     # Create an item
     create_resp = client.post("/items/", json={
         "name": "Get Test",
@@ -62,6 +66,7 @@ def test_get_item():
     assert data["name"] == "Get Test"
 
 def test_update_item():
+
     # Create an item
     create_resp = client.post("/items/", json={
         "name": "Update Test",
@@ -84,6 +89,7 @@ def test_update_item():
     assert data["description"] == "After update"
 
 def test_delete_item():
+    
     # Create an item
     create_resp = client.post("/items/", json={
         "name": "Delete Test",
