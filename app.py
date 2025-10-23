@@ -2,7 +2,7 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.responses import PlainTextResponse
-from fastapi.responses import Response
+# from fastapi.responses import Response
 
 import json
 from pydantic import BaseModel
@@ -13,7 +13,8 @@ from typing import List, Dict
 
 
 # ---------------------------------------------------------------------------------------
-# Use below code to format JSON responses by adding ', response_class=PrettyJSONResponse'
+# Use below code to format JSON responses by adding - 
+#   ', response_class=PrettyJSONResponse'
 # to the function call AFTER uncommenting below lines (19 to 25)
 # example: [Line 98] @app.get("/health", response_class=PrettyJSONResponse )
 # ---------------------------------------------------------------------------------------
@@ -52,7 +53,8 @@ app = FastAPI(title="CRUD API with FastAPI", version="1.1")
 #         content = await response.body()
 #         parsed = json.loads(content)
 #         formatted_content = json.dumps(parsed, indent=4)
-#         return Response(content=formatted_content, media_type="application/json")
+#         return Response(content=formatted_content, 
+# media_type="application/json")
 #     return response
 # ---------------------------------------------------
 
