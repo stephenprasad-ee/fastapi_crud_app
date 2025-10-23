@@ -36,13 +36,13 @@ jobs:
     # Adding a wait before linting
     - name: Wait for environment to stabilize
       run: |
-        echo "Waiting 10 seconds before running lint checks..."
-        sleep 10
+        echo "Waiting 5 seconds before running lint checks..."
+        sleep 5
 
     # Run flake8 linting
     - name: Run flake8 linting
       run: |
-        docker run --rm $IMAGE_NAME:$IMAGE_TAG flake8 .
+        docker run --rm $IMAGE_NAME:$IMAGE_TAG python -m flake8 .
 
     # Run tests using docker compose
     - name: Run tests with Docker Compose
