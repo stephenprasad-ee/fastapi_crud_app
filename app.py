@@ -68,6 +68,8 @@ current_id = 0
 # ---------------------
 # Pydantic Models
 # ---------------------
+
+
 class Item(BaseModel):
 
     name: str
@@ -82,9 +84,11 @@ class ItemResponse(Item):
 # ---------------------
 # Exception Handlers
 # ---------------------
+
+
 @app.exception_handler(Exception)
 async def generic_exception_handler(request: Request, exc: Exception):
-    
+
     logger.error(f"Unhandled error: {exc}", exc_info=True)
     return JSONResponse(
         status_code=500,
@@ -162,6 +166,8 @@ Available Endpoints:
 # ---------------------
 # Health Check Endpoint
 # ---------------------
+
+
 @app.get("/health", response_class=PrettyJSONResponse)
 async def health_check():
     logger.info("Health check requested")
@@ -173,6 +179,8 @@ async def health_check():
 # ---------------------
 # CRUD Endpoints
 # ---------------------
+
+
 @app.post("/items/", response_model=ItemResponse, response_class=PrettyJSONResponse)
 async def create_item(item: Item):
     global current_id
@@ -181,10 +189,12 @@ async def create_item(item: Item):
     logger.info(f"Item created", extra={"item_id": current_id, "item": item.dict()})
     return {**item.dict(), "id": current_id}
 
+
 @app.get("/items/", response_model=List[ItemResponse], response_class=PrettyJSONResponse)
 async def list_items():
     logger.info("Listing all items", extra={"total_items": len(items_db)})
     return [{"id": item_id, **item} for item_id, item in items_db.items()]
+
 
 @app.get("/items/{item_id}", response_model=ItemResponse, response_class=PrettyJSONResponse)
 async def get_item(item_id: int):
@@ -195,6 +205,7 @@ async def get_item(item_id: int):
     logger.info(f"Item retrieved", extra={"item_id": item_id})
     return {"id": item_id, **item}
 
+
 @app.put("/items/{item_id}", response_model=ItemResponse, response_class=PrettyJSONResponse)
 async def update_item(item_id: int, updated_item: Item):
     if item_id not in items_db:
@@ -203,6 +214,7 @@ async def update_item(item_id: int, updated_item: Item):
     items_db[item_id] = updated_item.dict()
     logger.info(f"Item updated", extra={"item_id": item_id, "item": updated_item.dict()})
     return {"id": item_id, **updated_item.dict()}
+
 
 @app.delete("/items/{item_id}", response_model=dict, response_class=PrettyJSONResponse)
 async def delete_item(item_id: int):
