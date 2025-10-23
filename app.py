@@ -78,6 +78,7 @@ class Item(BaseModel):
     price: float
     quantity: int
 
+
 class ItemResponse(Item):
 
     id: int
@@ -183,8 +184,8 @@ async def health_check():
 
 
 @app.post(
-        "/items/", 
-        response_model=ItemResponse, 
+        "/items/",
+        response_model=ItemResponse,
         response_class=PrettyJSONResponse
         )
 async def create_item(item: Item):
@@ -192,14 +193,14 @@ async def create_item(item: Item):
     current_id += 1
     items_db[current_id] = item.dict()
     logger.info(
-        f"Item created", 
+        f"Item created",
         extra={"item_id": current_id, "item": item.dict()})
     return {**item.dict(), "id": current_id}
 
 
 @app.get(
-        "/items/", 
-        response_model=List[ItemResponse], 
+        "/items/",
+        response_model=List[ItemResponse],
         response_class=PrettyJSONResponse
         )
 async def list_items():
@@ -208,8 +209,8 @@ async def list_items():
 
 
 @app.get(
-        "/items/{item_id}", 
-        response_model=ItemResponse, 
+        "/items/{item_id}",
+        response_model=ItemResponse,
         response_class=PrettyJSONResponse
         )
 async def get_item(item_id: int):
@@ -222,8 +223,8 @@ async def get_item(item_id: int):
 
 
 @app.put(
-        "/items/{item_id}", 
-        response_model=ItemResponse, 
+        "/items/{item_id}",
+        response_model=ItemResponse,
         response_class=PrettyJSONResponse
         )
 async def update_item(item_id: int, updated_item: Item):
@@ -232,21 +233,21 @@ async def update_item(item_id: int, updated_item: Item):
         raise HTTPException(status_code=404, detail="Item not found")
     items_db[item_id] = updated_item.dict()
     logger.info(
-        f"Item updated", 
+        f"Item updated",
         extra={"item_id": item_id, "item": updated_item.dict()}
         )
     return {"id": item_id, **updated_item.dict()}
 
 
 @app.delete(
-        "/items/{item_id}", 
-        response_model=dict, 
+        "/items/{item_id}",
+        response_model=dict,
         response_class=PrettyJSONResponse
         )
 async def delete_item(item_id: int):
     if item_id not in items_db:
         logger.warning(
-            f"Item not found for deletion", 
+            f"Item not found for deletion",
             extra={"item_id": item_id}
             )
         raise HTTPException(status_code=404, detail="Item not found")
