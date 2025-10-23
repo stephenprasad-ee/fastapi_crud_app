@@ -193,7 +193,7 @@ async def create_item(item: Item):
     current_id += 1
     items_db[current_id] = item.dict()
     logger.info(
-        f"Item created",
+        "Item created",
         extra={"item_id": current_id, "item": item.dict()})
     return {**item.dict(), "id": current_id}
 
@@ -216,9 +216,9 @@ async def list_items():
 async def get_item(item_id: int):
     item = items_db.get(item_id)
     if not item:
-        logger.warning(f"Item not found", extra={"item_id": item_id})
+        logger.warning("Item not found", extra={"item_id": item_id})
         raise HTTPException(status_code=404, detail="Item not found")
-    logger.info(f"Item retrieved", extra={"item_id": item_id})
+    logger.info("Item retrieved", extra={"item_id": item_id})
     return {"id": item_id, **item}
 
 
@@ -229,11 +229,11 @@ async def get_item(item_id: int):
         )
 async def update_item(item_id: int, updated_item: Item):
     if item_id not in items_db:
-        logger.warning(f"Item not found for update", extra={"item_id": item_id})
+        logger.warning("Item not found for update", extra={"item_id": item_id})
         raise HTTPException(status_code=404, detail="Item not found")
     items_db[item_id] = updated_item.dict()
     logger.info(
-        f"Item updated",
+        "Item updated",
         extra={"item_id": item_id, "item": updated_item.dict()}
         )
     return {"id": item_id, **updated_item.dict()}
@@ -247,12 +247,12 @@ async def update_item(item_id: int, updated_item: Item):
 async def delete_item(item_id: int):
     if item_id not in items_db:
         logger.warning(
-            f"Item not found for deletion",
+            "Item not found for deletion",
             extra={"item_id": item_id}
             )
         raise HTTPException(status_code=404, detail="Item not found")
     del items_db[item_id]
-    logger.info(f"Item deleted", extra={"item_id": item_id})
+    logger.info("Item deleted", extra={"item_id": item_id})
     return {"message": f"Item {item_id} deleted successfully"}
 
 
