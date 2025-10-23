@@ -28,6 +28,7 @@ class PrettyJSONResponse(JSONResponse):
             indent=4  # pretty print with 4 spaces
         ).encode("utf-8")
 
+
 # ---------------------
 # Setup JSON Logging
 # ---------------------
@@ -181,22 +182,36 @@ async def health_check():
 # ---------------------
 
 
-@app.post("/items/", response_model=ItemResponse, response_class=PrettyJSONResponse)
+@app.post(
+        "/items/", 
+        response_model=ItemResponse, 
+        response_class=PrettyJSONResponse
+        )
 async def create_item(item: Item):
     global current_id
     current_id += 1
     items_db[current_id] = item.dict()
-    logger.info(f"Item created", extra={"item_id": current_id, "item": item.dict()})
+    logger.info(
+        f"Item created", 
+        extra={"item_id": current_id, "item": item.dict()})
     return {**item.dict(), "id": current_id}
 
 
-@app.get("/items/", response_model=List[ItemResponse], response_class=PrettyJSONResponse)
+@app.get(
+        "/items/", 
+        response_model=List[ItemResponse], 
+        response_class=PrettyJSONResponse
+        )
 async def list_items():
     logger.info("Listing all items", extra={"total_items": len(items_db)})
     return [{"id": item_id, **item} for item_id, item in items_db.items()]
 
 
-@app.get("/items/{item_id}", response_model=ItemResponse, response_class=PrettyJSONResponse)
+@app.get(
+        "/items/{item_id}", 
+        response_model=ItemResponse, 
+        response_class=PrettyJSONResponse
+        )
 async def get_item(item_id: int):
     item = items_db.get(item_id)
     if not item:
@@ -206,20 +221,34 @@ async def get_item(item_id: int):
     return {"id": item_id, **item}
 
 
-@app.put("/items/{item_id}", response_model=ItemResponse, response_class=PrettyJSONResponse)
+@app.put(
+        "/items/{item_id}", 
+        response_model=ItemResponse, 
+        response_class=PrettyJSONResponse
+        )
 async def update_item(item_id: int, updated_item: Item):
     if item_id not in items_db:
         logger.warning(f"Item not found for update", extra={"item_id": item_id})
         raise HTTPException(status_code=404, detail="Item not found")
     items_db[item_id] = updated_item.dict()
-    logger.info(f"Item updated", extra={"item_id": item_id, "item": updated_item.dict()})
+    logger.info(
+        f"Item updated", 
+        extra={"item_id": item_id, "item": updated_item.dict()}
+        )
     return {"id": item_id, **updated_item.dict()}
 
 
-@app.delete("/items/{item_id}", response_model=dict, response_class=PrettyJSONResponse)
+@app.delete(
+        "/items/{item_id}", 
+        response_model=dict, 
+        response_class=PrettyJSONResponse
+        )
 async def delete_item(item_id: int):
     if item_id not in items_db:
-        logger.warning(f"Item not found for deletion", extra={"item_id": item_id})
+        logger.warning(
+            f"Item not found for deletion", 
+            extra={"item_id": item_id}
+            )
         raise HTTPException(status_code=404, detail="Item not found")
     del items_db[item_id]
     logger.info(f"Item deleted", extra={"item_id": item_id})
