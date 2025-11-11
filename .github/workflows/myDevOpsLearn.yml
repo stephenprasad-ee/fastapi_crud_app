@@ -62,7 +62,7 @@ jobs:
       run: |
         echo "Tagging and pushing image to Docker Hubba..."
         docker tag $IMAGE_NAME:$IMAGE_TAG ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME
-        docker push ${{ secrets.DOCKERHUB_USERNAMEZZ }}/$IMAGE_NAME:$IMAGE_TAG
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$IMAGE_TAG
 
 # Hopefully this should do the job. Trying things out again :(
 
