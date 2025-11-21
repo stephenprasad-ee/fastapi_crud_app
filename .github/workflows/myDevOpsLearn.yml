@@ -88,9 +88,9 @@ jobs:
     # Display deployment data
     - name: Deployment information
       run: |
-        kubectl get all -n ${namespace}
-        kubectl describe service myhealthapi-service -n ${namespace}
-        kubectl get pods -n ${namespace}
+        kubectl get all -n myhealthapi
+        kubectl describe service myhealthapi-service -n myhealthapi
+        kubectl get pods -n myhealthapi
 
 
 # Hopefully this should do the job. Trying things out again :(
