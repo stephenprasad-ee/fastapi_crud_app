@@ -8,7 +8,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  # build: (changed the name after starting with k8s)
+  minikube-deploy:
     #runs-on: ubuntu-latest # <- Use this if you prefer to use github runner
     runs-on: self-hosted
 
@@ -16,10 +17,18 @@ jobs:
       IMAGE_NAME: myhealthapi
       IMAGE_TAG: latest
       PYTHON_VERSION: 3.12
+      NAMESPACE: myhealthapi #new line added for k8s
 
     steps:
       # Checkout code from repo
     - uses: actions/checkout@v4
+
+      # Start Minikube
+    - name: Start Minikube
+      run: |
+        echo "Starting Minikube.."
+        minikube status || minikube start
+        eval $(minikube -p minikube docker-env)
 
       # Setup Python 3.12 (currently installed on my local :D )
     - name: Set up Python ${{ env.PYTHON_VERSION }}
@@ -63,6 +72,26 @@ jobs:
         echo "Tagging and pushing image to Docker Hubba..."
         docker tag $IMAGE_NAME:$IMAGE_TAG ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$IMAGE_TAG
+
+    # Adding a wait before linting
+    - name: Wait for environment to stabilize
+      run: |
+        echo "Waiting 5 seconds before running lint checks..."
+        sleep 5
+
+    # Attempt to start using minikube
+    - name: Apply K8S manifests
+      run: |
+        echo "Applying k8s"
+        kubectl apply -k k8s/
+
+    # Display deployment data
+    - name: Deployment information
+      run: |
+        kubectl get all -n ${namespace}
+        kubectl describe service myhealthapi-service -n ${namespace}
+        kubectl get pods -n ${namespace}
+
 
 # Hopefully this should do the job. Trying things out again :(
 
