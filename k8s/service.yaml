@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: myhealthapi-service
+  namespace: myhealthapi
+spec:
+  selector:
+    app: myhealthapi
+  type: LoadBalancer #Minikube will expose this as a NodePort or tunnel
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myhealthapi-config
+  namespace: myhealthapi
+data:
+  LOG_LEVEL: "info"
+  APP_NAME: "MyHealthAPI"
