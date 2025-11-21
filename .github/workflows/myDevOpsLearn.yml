@@ -85,11 +85,6 @@ jobs:
         echo "Applying k8s"
         kubectl apply -k k8s/
 
-    # Expose app via minikube if you have used loadbalancer config
-    - name: Open app in a browser after exposing minikube
-      run: |
-        minikube service myhealthapi-service -n myhealthapi
-
     # Display deployment data
     - name: Deployment information
       run: |
@@ -97,6 +92,10 @@ jobs:
         kubectl describe service myhealthapi-service -n myhealthapi
         kubectl get pods -n myhealthapi
 
+    # Expose app via minikube if you have used loadbalancer config
+    - name: Open app in a browser after exposing minikube
+      run: |
+        minikube service myhealthapi-service -n myhealthapi
 
 # Hopefully this should do the job. Trying things out again :(
 
